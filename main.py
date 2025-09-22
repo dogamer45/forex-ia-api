@@ -4,7 +4,7 @@ import os
 
 app = FastAPI()
 
-# Modèle du body JSON
+# ✅ Définition du modèle attendu dans le body
 class SymbolRequest(BaseModel):
     symbol: str
     price: float
@@ -15,23 +15,27 @@ def root():
 
 @app.post("/predict")
 def predict(request: SymbolRequest):
+    symbol = request.symbol
+    price = request.price
+
+    # Exemple simple
     signal = "BUY"
     confidence = 0.75
 
     if signal == "BUY":
-        stop_loss = request.price * (1 - 0.005)   # -0.5%
-        take_profit = request.price * (1 + 0.02)  # +2%
+        stop_loss = price * (1 - 0.005)
+        take_profit = price * (1 + 0.02)
     else:
-        stop_loss = request.price * (1 + 0.005)   # +0.5%
-        take_profit = request.price * (1 - 0.02)  # -2%
+        stop_loss = price * (1 + 0.005)
+        take_profit = price * (1 - 0.02)
 
     return {
-        "symbol": request.symbol,
-        "price": request.price,
+        "symbol": symbol,
+        "price": price,
         "signal": signal,
         "confidence": confidence,
         "stop_loss": round(stop_loss, 5),
-        "take_profit": round(take_profit, 5)
+        "take_profit": round(take_profit, 5),
     }
 
 if __name__ == "__main__":
