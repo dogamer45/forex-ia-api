@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from datetime import datetime
 import os
 
 app = FastAPI()
 
-# ✅ Définition du modèle attendu dans le body
-class SymbolRequest(BaseModel):
+# Modèle pour la requête
+class PredictRequest(BaseModel):
     symbol: str
     price: float
 
@@ -14,28 +15,15 @@ def root():
     return {"message": "Hello from FastAPI on Render"}
 
 @app.post("/predict")
-def predict(request: SymbolRequest):
-    symbol = request.symbol
-    price = request.price
-
-    # Exemple simple
-    signal = "BUY"
-    confidence = 0.75
-
-    if signal == "BUY":
-        stop_loss = price * (1 - 0.005)
-        take_profit = price * (1 + 0.02)
-    else:
-        stop_loss = price * (1 + 0.005)
-        take_profit = price * (1 - 0.02)
-
+def predict(request: PredictRequest):
     return {
-        "symbol": symbol,
-        "price": price,
-        "signal": signal,
-        "confidence": confidence,
-        "stop_loss": round(stop_loss, 5),
-        "take_profit": round(take_profit, 5),
+        "symbol": request.symbol,
+        "price": request.price,
+        "signal": "BUY",
+        "confidence": 0.75,
+        "stop_loss": 1.0945,
+        "take_profit": 1.122,
+        "timestamp": datetime.utcnow().isoformat()  # <-- ajout du timestamp
     }
 
 if __name__ == "__main__":
